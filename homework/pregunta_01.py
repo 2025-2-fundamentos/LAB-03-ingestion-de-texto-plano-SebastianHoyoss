@@ -4,7 +4,7 @@ Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 
 # pylint: disable=import-outside-toplevel
 
-
+import pandas as pd
 def pregunta_01():
     """
     Construya y retorne un dataframe de Pandas a partir del archivo
@@ -18,3 +18,32 @@ def pregunta_01():
 
 
     """
+    with open("files/input/clusters_report.txt", "r", encoding = "utf-8") as f:
+        lineas = f.readlines()
+
+    data = []
+    cluster = 0
+    cantidad_palabras = 0
+    porcentaje_palabras = 0
+    palabras_clave = " "
+
+    for linea in lineas[4:]:
+        limpiar_linea = linea.strip().split()
+
+        if len(limpiar_linea) > 0:
+            if limpiar_linea[0].isdigit():
+                
+                cluster = int(limpiar_linea[0])
+                cantidad_palabras = int(limpiar_linea[1])
+                porcentaje_palabras = float(limpiar_linea[2].replace(",", "."))
+                palabras_clave = palabras_clave.join(limpiar_linea[4:])
+
+            else:
+                palabras_clave += " " + " ".join(limpiar_linea).strip(".")
+        else:
+            data.append({"cluster": cluster, "cantidad_de_palabras_clave": cantidad_palabras, "porcentaje_de_palabras_clave" : porcentaje_palabras, "principales_palabras_clave" : palabras_clave})
+            palabras_clave = " "
+
+    df = pd.DataFrame(data, columns = ["cluster", "cantidad_de_palabras_clave", "porcentaje_de_palabras_clave", "principales_palabras_clave"])
+
+    return df
